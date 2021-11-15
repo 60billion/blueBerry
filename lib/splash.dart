@@ -6,10 +6,22 @@ class Splash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.amber,
-      child: const Center(
-          child: CircularProgressIndicator(
-        color: Colors.white,
+      color: Colors.white,
+      child: Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            'assets/imgs/60Logo.png',
+            height: 150.0,
+          ),
+          const SizedBox(
+            height: 40.0,
+          ),
+          const CircularProgressIndicator(
+            color: Colors.blue,
+          ),
+        ],
       )),
     );
   }
