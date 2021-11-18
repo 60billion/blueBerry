@@ -41,9 +41,7 @@ class AddressPage extends StatelessWidget {
               child: ListView.builder(
             itemBuilder: (context, index) {
               return ListTile(
-                leading: const Icon(Icons.image),
-                trailing: const Icon(Icons.comment),
-                title: Text("Title $index"),
+                title: Text("Address $index"),
                 subtitle: const Text("subTitle"),
               );
             },

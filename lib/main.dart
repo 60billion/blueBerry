@@ -1,9 +1,10 @@
 import 'package:beamer/beamer.dart';
 import 'package:blueberry/router/location.dart';
-import 'package:blueberry/screens/auth_screen.dart';
+import 'package:blueberry/screens/start_screen.dart';
 import 'package:blueberry/screens/splash_screen.dart';
 import 'package:blueberry/utils/logger.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 final _routerDelegate = BeamerDelegate(guards: [
   BeamGuard(
@@ -11,7 +12,7 @@ final _routerDelegate = BeamerDelegate(guards: [
       check: (context, location) {
         return false;
       },
-      showPage: BeamPage(child: AuthScreen()))
+      showPage: BeamPage(child: StartScreen()))
 ], locationBuilder: BeamerLocationBuilder(beamLocations: [HomeLocation()]));
 
 void main() {
@@ -52,6 +53,10 @@ class BlueBerry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+        theme: ThemeData(
+          primarySwatch: Colors.purple,
+          textTheme: GoogleFonts.notoSansTextTheme(),
+        ),
         routeInformationParser: BeamerParser(),
         routerDelegate: _routerDelegate);
   }

@@ -1,9 +1,10 @@
 import 'package:blueberry/screens/start/address_page.dart';
+import 'package:blueberry/screens/start/auth_page.dart';
 import 'package:blueberry/screens/start/intro_page.dart';
 import 'package:flutter/material.dart';
 
-class AuthScreen extends StatelessWidget {
-  AuthScreen({Key? key}) : super(key: key);
+class StartScreen extends StatelessWidget {
+  StartScreen({Key? key}) : super(key: key);
 
   //PageView를 컨트롤,설정하기위해서 인스턴스 생성
   PageController _pageController = PageController();
@@ -11,15 +12,12 @@ class AuthScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-          controller: _pageController,
-          physics: NeverScrollableScrollPhysics(),
+      body: PageView(controller: _pageController,
+          //physics: NeverScrollableScrollPhysics(), //페이지뷰에서 스와이프 잠금
           children: [
             IntroPage(_pageController), //파라미터로 넣어주어서 사용
             AddressPage(),
-            Container(
-              color: Colors.accents[5],
-            ),
+            AuthPage(),
           ]),
     );
   }

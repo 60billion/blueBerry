@@ -38,6 +38,7 @@ dependencies:
   beamer: ^0.14.1
   extended_image: ^5.1.3
   google_fonts: ^2.1.0
+  flutter_multi_formatter: ^2.4.1
 
 dev_dependencies:
   flutter_test:
