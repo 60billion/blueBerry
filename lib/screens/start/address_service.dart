@@ -1,9 +1,10 @@
 import 'package:blueberry/constants/keys.dart';
+import 'package:blueberry/data/ad_model.dart';
 import 'package:blueberry/utils/logger.dart';
 import 'package:dio/dio.dart';
 
 class AddressService {
-  void searchAddressByStr(String text) async {
+  Future<Ad_model> searchAddressByStr(String text) async {
     final formData = {
       'key': VWORLD_KEY,
       'request': 'search',
@@ -17,7 +18,9 @@ class AddressService {
         .catchError((e) {
       logger.d(e.message);
     });
-    logger.d(response.data);
-    logger.d(response.data is Map);
+    Ad_model ad_model = Ad_model.fromJson(response.data["response"]);
+    logger.d(ad_model);
+
+    return ad_model;
   }
 }
