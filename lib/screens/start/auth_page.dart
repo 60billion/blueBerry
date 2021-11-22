@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures
 
+import 'package:blueberry/states/user_provider.dart';
 import 'package:blueberry/utils/logger.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
+import 'package:provider/src/provider.dart';
 
 class AuthPage extends StatefulWidget {
   AuthPage({Key? key}) : super(key: key);
@@ -168,6 +170,7 @@ class _AuthPageState extends State<AuthPage> {
 
     setState(() {
       ver = VerificationStatus.verificationDone;
+      context.read<UserProvider>().setUserAuth(true);
     });
   }
 }
