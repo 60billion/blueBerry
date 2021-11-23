@@ -1,4 +1,5 @@
 import 'package:blueberry/data/ad_model.dart';
+import 'package:blueberry/data/address_model.dart';
 import 'package:blueberry/screens/start/address_service.dart';
 import 'package:blueberry/utils/logger.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,6 +16,8 @@ class AddressPage extends StatefulWidget {
 class _AddressPageState extends State<AddressPage> {
   TextEditingController _address = TextEditingController();
   Ad_model? _ad_model;
+  Address_model? _add_model;
+  bool _isSearch = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +30,7 @@ class _AddressPageState extends State<AddressPage> {
           TextFormField(
             controller: _address,
             onFieldSubmitted: (text) async {
+              _add_model = null;
               _ad_model = await AddressService().searchAddressByStr(text);
               setState(() {});
               logger.d(text);
@@ -52,6 +56,10 @@ class _AddressPageState extends State<AddressPage> {
                   // fromHeight use double.infinity as width and 40 is the height
                   ),
               onPressed: () async {
+                _ad_model = null;
+                setState(() {
+                  _isSearch = true;
+                });
                 Location location = new Location();
 
                 bool _serviceEnabled;
@@ -76,35 +84,81 @@ class _AddressPageState extends State<AddressPage> {
 
                 _locationData = await location.getLocation();
 
-                logger.d(_locationData);
+                _add_model = await AddressService().searchAddressByCoordinate(
+                    log: _locationData.longitude!,
+                    lat: _locationData.latitude!);
+                if (_add_model != null && _add_model!.status == "OK") {
+                  logger.d(_add_model!.result![0].text);
+                } else {
+                  logger.d("좌표 ($_locationData) 기준으로 주소 값이 조회 되지 않습니다.");
+                }
+                setState(() {
+                  _isSearch = false;
+                });
               },
-              label: const Text(' 현재위치로 찾기',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              icon: const Icon(CupertinoIcons.compass)),
-          Expanded(
-              child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    if (_ad_model == null ||
-                        _ad_model!.result == null ||
-                        _ad_model!.result!.items == null ||
-                        _ad_model!.result!.items![index].address == null) {
-                      return Container();
-                    } else {
-                      return ListTile(
-                        title: Text(
-                            _ad_model!.result!.items![index].address!.road ??
-                                ""),
-                        subtitle: Text(
-                            _ad_model!.result!.items![index].address!.parcel ??
-                                ""),
-                      );
-                    }
-                  },
-                  itemCount: (_ad_model == null ||
+              label: Text(_isSearch ? '위치확인중 ' : "현재 위치 찾기",
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              icon: _isSearch
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(CupertinoIcons.compass)),
+          if (_ad_model != null)
+            Expanded(
+                child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      if (_ad_model == null ||
                           _ad_model!.result == null ||
-                          _ad_model!.result!.items == null)
-                      ? 0
-                      : _ad_model!.result!.items!.length))
+                          _ad_model!.result!.items == null ||
+                          _ad_model!.result!.items![index].address == null) {
+                        return const Center(
+                            child: Text("입력한 명칭으로 주소가 검색되지 않습니다. 다시 시도 해주세요."));
+                      } else {
+                        return ListTile(
+                          title: Text(
+                              _ad_model!.result!.items![index].address!.road ??
+                                  ""),
+                          subtitle: Text(_ad_model!
+                                  .result!.items![index].address!.parcel ??
+                              ""),
+                        );
+                      }
+                    },
+                    itemCount: (_ad_model == null ||
+                            _ad_model!.result == null ||
+                            _ad_model!.result!.items == null)
+                        ? 0
+                        : _ad_model!.result!.items!.length)),
+          if (_add_model != null)
+            Expanded(
+                child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      if (_add_model!.status != "OK") {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 24.0),
+                          child: Container(
+                            child: const Center(
+                                child: Text(
+                              "GPS 기준으로 주소가 조회 되지 않습니다.\n 검색으로 찾아주세요.",
+                              softWrap: true,
+                              textAlign: TextAlign.center,
+                            )),
+                          ),
+                        );
+                      } else {
+                        return ListTile(
+                          title: Text(_add_model!.result![0].text ??
+                              "GPS 기준으로 주소가 조회 되지 않습니다."),
+                          subtitle: Text(_add_model!.result![1].text ??
+                              "GPS 기준으로 주소가 조회 되지 않습니다."),
+                        );
+                      }
+                    },
+                    itemCount: 1)),
         ],
       ),
     );
