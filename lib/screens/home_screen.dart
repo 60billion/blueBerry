@@ -1,22 +1,71 @@
+import 'package:blueberry/screens/home/items_page.dart';
 import 'package:blueberry/states/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.read<UserProvider>().setUserAuth(false);
-            },
-            icon: const Icon(Icons.logout),
-          ),
-        ],
+    const List<Widget> _widgetOptions = <Widget>[
+      ItemsPage(),
+      Text("Location"), //the Text widgets will change a page class
+      Text("chatting"),
+      Text("profile")
+    ];
+
+    return SafeArea(
+      child: Scaffold(
+        body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+        bottomNavigationBar: BottomNavigationBar(
+          // ignore: prefer_const_literals_to_create_immutables
+          items: [
+            const BottomNavigationBarItem(icon: Icon(Icons.home), label: "피드"),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.where_to_vote), label: "내 위치"),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.chat_bubble), label: "채팅"),
+            const BottomNavigationBarItem(
+                icon: Icon(Icons.person), label: "프로필")
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.purple,
+          unselectedItemColor: Colors.grey[400],
+          showUnselectedLabels: true,
+          onTap: _onItemTapped,
+        ),
+        appBar: AppBar(
+          title: const Text("Home"),
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.search),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.menu),
+            ),
+            IconButton(
+              onPressed: () {
+                context.read<UserProvider>().setUserAuth(false);
+              },
+              icon: const Icon(Icons.logout),
+            ),
+          ],
+        ),
       ),
     );
   }

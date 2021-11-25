@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:provider/src/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthPage extends StatefulWidget {
   AuthPage({Key? key}) : super(key: key);
@@ -94,7 +95,7 @@ class _AuthPageState extends State<AuthPage> {
                       label: const Text(' 인증번호 요청',
                           style: TextStyle(fontWeight: FontWeight.bold)),
                       icon: const Icon(Icons.confirmation_number),
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState != null) {
                           bool passed = _formKey.currentState!.validate();
                           logger.d(passed);

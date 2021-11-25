@@ -5,6 +5,8 @@ import 'package:blueberry/utils/logger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+import 'package:provider/src/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddressPage extends StatefulWidget {
   AddressPage({Key? key}) : super(key: key);
@@ -18,6 +20,11 @@ class _AddressPageState extends State<AddressPage> {
   Ad_model? _ad_model;
   Address_model? _add_model;
   bool _isSearch = false;
+  @override
+  void dispose() {
+    _address.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,6 +126,11 @@ class _AddressPageState extends State<AddressPage> {
                             child: Text("입력한 명칭으로 주소가 검색되지 않습니다. 다시 시도 해주세요."));
                       } else {
                         return ListTile(
+                          onTap: () {
+                            _setAddressinSharedPrefs(_ad_model!
+                                    .result!.items![index].address!.road ??
+                                "");
+                          },
                           title: Text(
                               _ad_model!.result!.items![index].address!.road ??
                                   ""),
@@ -151,10 +163,17 @@ class _AddressPageState extends State<AddressPage> {
                         );
                       } else {
                         return ListTile(
+                          onTap: () {
+                            _setAddressinSharedPrefs(
+                                _add_model!.result![0].text ?? "");
+                          },
                           title: Text(_add_model!.result![0].text ??
                               "GPS 기준으로 주소가 조회 되지 않습니다."),
-                          subtitle: Text(_add_model!.result![1].text ??
-                              "GPS 기준으로 주소가 조회 되지 않습니다."),
+                          subtitle: Text(_add_model!.result!.length > 1
+                              ? _add_model!.result![1].text ??
+                                  "GPS 기준으로 주소가 조회 되지 않습니다."
+                              : _add_model!.result![0].text ??
+                                  "GPS 기준으로 주소가 조회 되지 않습니다."),
                         );
                       }
                     },
@@ -162,5 +181,13 @@ class _AddressPageState extends State<AddressPage> {
         ],
       ),
     );
+  }
+
+  _setAddressinSharedPrefs(String address) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('address', address);
+
+    context.read<PageController>().animateToPage(2,
+        duration: const Duration(milliseconds: 500), curve: Curves.ease);
   }
 }

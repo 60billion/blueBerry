@@ -12,13 +12,15 @@ final _routerDelegate = BeamerDelegate(guards: [
   BeamGuard(
       pathBlueprints: ['/'],
       check: (context, location) {
-        return context.watch<UserProvider>().userState;
+        return true;
+        // return context.watch<UserProvider>().userState;
       },
       showPage: BeamPage(child: StartScreen()))
 ], locationBuilder: BeamerLocationBuilder(beamLocations: [HomeLocation()]));
 
 void main() {
   logger.d("My first log by logger pkg!!");
+  Provider.debugCheckInvalidValueType = null;
   runApp(const MyApp());
 }
 

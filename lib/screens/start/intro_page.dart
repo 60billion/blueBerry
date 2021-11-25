@@ -3,10 +3,10 @@
 import 'package:blueberry/utils/logger.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/src/provider.dart';
 
 class IntroPage extends StatelessWidget {
-  PageController controller;
-  IntroPage(this.controller, {Key? key}) : super(key: key);
+  IntroPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,7 @@ class IntroPage extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () {
-                        controller.animateToPage(1,
+                        context.read<PageController>().animateToPage(1,
                             duration: Duration(milliseconds: 500),
                             curve: Curves.ease);
                         logger.d("on text button clicked!");
