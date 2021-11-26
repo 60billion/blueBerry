@@ -4,6 +4,7 @@ import 'package:blueberry/screens/start_screen.dart';
 import 'package:blueberry/screens/splash_screen.dart';
 import 'package:blueberry/states/user_provider.dart';
 import 'package:blueberry/utils/logger.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -21,16 +22,24 @@ final _routerDelegate = BeamerDelegate(guards: [
 void main() {
   logger.d("My first log by logger pkg!!");
   Provider.debugCheckInvalidValueType = null;
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: Future.delayed(const Duration(milliseconds: 500), () => 100),
+        future: _initialization,
         builder: (context, snapshot) {
           return AnimatedSwitcher(
               duration: const Duration(seconds: 2),
@@ -42,8 +51,8 @@ class MyApp extends StatelessWidget {
     if (snapshot.hasError) {
       print("error occur while loading.");
       return const Text("Error occur");
-    } else if (snapshot.hasData) {
-      print(snapshot);
+    } else if (snapshot.connectionState == ConnectionState.done) {
+      logger.d("success the initializedApp firebase!!");
       return BlueBerry();
     } else {
       return SplashScreen();

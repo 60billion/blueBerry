@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1069059405936",
+    "project_id": "blueberry-8c190",
+    "storage_bucket": "blueberry-8c190.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1069059405936:android:38e27ac6df81dc6eeb9cb5",
+        "android_client_info": {
+          "package_name": "com.example.blueberry"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1069059405936-h538e76cl7hhdstjna786acpiue30qft.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.blueberry",
+            "certificate_hash": "d7822d1e3df15d385229e8f615671028cf59e323"
+          }
+        },
+        {
+          "client_id": "1069059405936-21evlsut8n1l8u994p5br2dvgdajcjqn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbddX6Hh1AZNXIgdJGp9zLHfZ5K5wG_L4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1069059405936-21evlsut8n1l8u994p5br2dvgdajcjqn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
