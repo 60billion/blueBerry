@@ -1,5 +1,6 @@
 import 'package:blueberry/screens/home/items_page.dart';
 import 'package:blueberry/states/user_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
@@ -60,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               onPressed: () {
-                context.read<UserProvider>().setUserAuth(false);
+                FirebaseAuth.instance.signOut();
               },
               icon: const Icon(Icons.logout),
             ),

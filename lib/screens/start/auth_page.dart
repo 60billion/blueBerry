@@ -3,6 +3,7 @@
 import 'package:blueberry/states/user_provider.dart';
 import 'package:blueberry/utils/logger.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
@@ -99,10 +100,34 @@ class _AuthPageState extends State<AuthPage> {
                         if (_formKey.currentState != null) {
                           bool passed = _formKey.currentState!.validate();
                           logger.d(passed);
-                          if (passed)
-                            setState(() {
-                              ver = VerificationStatus.codeSent;
-                            });
+                          if (passed) {
+                            FirebaseAuth auth = FirebaseAuth.instance;
+                            await FirebaseAuth.instance.verifyPhoneNumber(
+                              phoneNumber: '+821075676192',
+                              verificationCompleted:
+                                  (PhoneAuthCredential credential) {
+                                auth.signInWithCredential(credential);
+                              },
+                              verificationFailed: (FirebaseAuthException e) {
+                                logger.d(e.message);
+                              },
+                              codeSent: (String verificationId,
+                                  int? resendToken) async {
+                                String smsCode = '444444';
+
+                                // Create a PhoneAuthCredential with the code
+                                PhoneAuthCredential credential =
+                                    PhoneAuthProvider.credential(
+                                        verificationId: verificationId,
+                                        smsCode: smsCode);
+
+                                // Sign the user in (or link) with the credential
+                                await auth.signInWithCredential(credential);
+                              },
+                              codeAutoRetrievalTimeout:
+                                  (String verificationId) {},
+                            );
+                          }
                         }
                       },
                     ),
@@ -171,7 +196,7 @@ class _AuthPageState extends State<AuthPage> {
 
     setState(() {
       ver = VerificationStatus.verificationDone;
-      context.read<UserProvider>().setUserAuth(true);
+      //context.read<UserProvider>().user;
     });
   }
 }
