@@ -26,6 +26,9 @@ class _AuthPageState extends State<AuthPage> {
 
   VerificationStatus ver = VerificationStatus.none;
 
+  String? _verificationId;
+  int? _resending;
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constrains) {
@@ -93,36 +96,47 @@ class _AuthPageState extends State<AuthPage> {
                           elevation: 0.0
                           // fromHeight use double.infinity as width and 40 is the height
                           ),
-                      label: const Text(' 인증번호 요청',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      label: (ver == VerificationStatus.codeSending)
+                          ? CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : Text(' 인증번호 요청',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                       icon: const Icon(Icons.confirmation_number),
                       onPressed: () async {
+                        if (ver == VerificationStatus.codeSending) return;
                         if (_formKey.currentState != null) {
                           bool passed = _formKey.currentState!.validate();
                           logger.d(passed);
                           if (passed) {
+                            String phoneNum = _phoneNumber.text;
+                            phoneNum = phoneNum.replaceAll(" ", '');
+                            phoneNum = phoneNum.replaceFirst('0', '');
+
                             FirebaseAuth auth = FirebaseAuth.instance;
+                            setState(() {
+                              ver = VerificationStatus.codeSending;
+                            });
                             await FirebaseAuth.instance.verifyPhoneNumber(
-                              phoneNumber: '+821075676192',
+                              phoneNumber: '+82$phoneNum',
+                              forceResendingToken: _resending,
                               verificationCompleted:
                                   (PhoneAuthCredential credential) {
                                 auth.signInWithCredential(credential);
                               },
                               verificationFailed: (FirebaseAuthException e) {
                                 logger.d(e.message);
+                                setState(() {
+                                  ver = VerificationStatus.none;
+                                });
                               },
                               codeSent: (String verificationId,
                                   int? resendToken) async {
-                                String smsCode = '444444';
-
-                                // Create a PhoneAuthCredential with the code
-                                PhoneAuthCredential credential =
-                                    PhoneAuthProvider.credential(
-                                        verificationId: verificationId,
-                                        smsCode: smsCode);
-
-                                // Sign the user in (or link) with the credential
-                                await auth.signInWithCredential(credential);
+                                setState(() {
+                                  ver = VerificationStatus.codeSent;
+                                });
+                                _verificationId = verificationId;
+                                _resending = resendToken;
                               },
                               codeAutoRetrievalTimeout:
                                   (String verificationId) {},
@@ -192,8 +206,16 @@ class _AuthPageState extends State<AuthPage> {
       ver = VerificationStatus.verifying;
     });
 
-    await Future.delayed(Duration(seconds: 3));
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          verificationId: _verificationId!, smsCode: _verifyCode.text);
 
+      await FirebaseAuth.instance.signInWithCredential(credential);
+    } catch (e) {
+      logger.d('verification filed!!');
+      SnackBar sb = SnackBar(content: Text("입력한 코드가 틀립니다."));
+      ScaffoldMessenger.of(context).showSnackBar(sb);
+    }
     setState(() {
       ver = VerificationStatus.verificationDone;
       //context.read<UserProvider>().user;
@@ -201,4 +223,10 @@ class _AuthPageState extends State<AuthPage> {
   }
 }
 
-enum VerificationStatus { none, codeSent, verifying, verificationDone }
+enum VerificationStatus {
+  none,
+  codeSending,
+  codeSent,
+  verifying,
+  verificationDone
+}
