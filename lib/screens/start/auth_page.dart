@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, curly_braces_in_flow_control_structures
 
+import 'package:blueberry/constants/shared_pref_keys.dart';
 import 'package:blueberry/states/user_provider.dart';
 import 'package:blueberry/utils/logger.dart';
 import 'package:extended_image/extended_image.dart';
@@ -220,6 +221,15 @@ class _AuthPageState extends State<AuthPage> {
       ver = VerificationStatus.verificationDone;
       //context.read<UserProvider>().user;
     });
+
+    _getAddress() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String address = prefs.getString(SHARED_ADDRESS) ?? "";
+      double lat = prefs.getDouble(SHARED_LAT) ?? 0;
+      double log = prefs.getDouble(SHARED_LON) ?? 0;
+
+      logger.d("address from shared pref = $address");
+    }
   }
 }
 

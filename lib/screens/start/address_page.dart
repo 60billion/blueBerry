@@ -1,3 +1,4 @@
+import 'package:blueberry/constants/shared_pref_keys.dart';
 import 'package:blueberry/data/ad_model.dart';
 import 'package:blueberry/data/address_model.dart';
 import 'package:blueberry/screens/start/address_service.dart';
@@ -127,9 +128,16 @@ class _AddressPageState extends State<AddressPage> {
                       } else {
                         return ListTile(
                           onTap: () {
-                            _setAddressinSharedPrefs(_ad_model!
-                                    .result!.items![index].address!.road ??
-                                "");
+                            _setAddressinSharedPrefs(
+                                _ad_model!
+                                        .result!.items![index].address!.road ??
+                                    "",
+                                num.parse(
+                                    _ad_model!.result!.items![index].point!.y ??
+                                        "0"),
+                                num.parse(
+                                    _ad_model!.result!.items![index].point!.x ??
+                                        "0"));
                           },
                           title: Text(
                               _ad_model!.result!.items![index].address!.road ??
@@ -165,7 +173,9 @@ class _AddressPageState extends State<AddressPage> {
                         return ListTile(
                           onTap: () {
                             _setAddressinSharedPrefs(
-                                _add_model!.result![0].text ?? "");
+                                _add_model!.result![0].text ?? "",
+                                num.parse(_add_model!.input!.point!.y ?? "0"),
+                                num.parse(_add_model!.input!.point!.x ?? "0"));
                           },
                           title: Text(_add_model!.result![0].text ??
                               "GPS 기준으로 주소가 조회 되지 않습니다."),
@@ -183,9 +193,14 @@ class _AddressPageState extends State<AddressPage> {
     );
   }
 
-  _setAddressinSharedPrefs(String address) async {
+  _setAddressinSharedPrefs(String address, num lat, num log) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('address', address);
+    await prefs.setString(SHARED_ADDRESS, address);
+    await prefs.setDouble(SHARED_LAT, lat.toDouble());
+    await prefs.setDouble(SHARED_LON, log.toDouble());
+
+    logger.d(lat.toDouble());
+    logger.d(log.toDouble());
 
     context.read<PageController>().animateToPage(2,
         duration: const Duration(milliseconds: 500), curve: Curves.ease);
