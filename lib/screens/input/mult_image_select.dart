@@ -1,3 +1,4 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
 class MultiImageSelect extends StatelessWidget {
@@ -38,22 +39,27 @@ class MultiImageSelect extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
-              width: 100,
-              color: Colors.green,
-            ),
-            Container(
-              width: 100,
-              color: Colors.yellow,
-            ),
-            Container(
-              width: 100,
-              color: Colors.pink,
-            ),
-            Container(
-              width: 100,
-              color: Colors.green,
-            )
+            ...List.generate(
+                20,
+                (index) => Stack(
+                      alignment: AlignmentDirectional.topEnd,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              right: 16, top: 16, bottom: 20),
+                          child: ExtendedImage.network(
+                              'https://picsum.photos/100/100?random={$index+1}',
+                              shape: BoxShape.rectangle,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(16.0))),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.remove_circle),
+                          color: Colors.black54,
+                        )
+                      ],
+                    ))
           ],
         ),
       );
