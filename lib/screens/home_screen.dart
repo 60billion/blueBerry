@@ -1,5 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:beamer/src/beamer.dart';
 import 'package:blueberry/screens/home/items_page.dart';
 import 'package:blueberry/states/user_provider.dart';
+import 'package:blueberry/widgets/expandable_fab.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
@@ -30,6 +34,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return SafeArea(
       child: Scaffold(
+        floatingActionButton: ExpandableFab(distance: 90, children: [
+          MaterialButton(
+            color: Colors.purple,
+            elevation: 4.0,
+            onPressed: () {},
+            shape: CircleBorder(),
+            height: 40,
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+          ),
+          MaterialButton(
+            color: Colors.purple,
+            elevation: 4.0,
+            onPressed: () {
+              context.beamToNamed('/input');
+            },
+            shape: CircleBorder(),
+            height: 40,
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+          ),
+        ]),
         body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
         bottomNavigationBar: BottomNavigationBar(
           // ignore: prefer_const_literals_to_create_immutables

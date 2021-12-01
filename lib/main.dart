@@ -9,14 +9,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-final _routerDelegate = BeamerDelegate(guards: [
-  BeamGuard(
-      pathBlueprints: ['/'],
-      check: (context, location) {
-        return context.watch<UserProvider>().user != null;
-      },
-      showPage: BeamPage(child: StartScreen()))
-], locationBuilder: BeamerLocationBuilder(beamLocations: [HomeLocation()]));
+final _routerDelegate = BeamerDelegate(
+    guards: [
+      BeamGuard(
+          pathBlueprints: ['/'],
+          check: (context, location) {
+            return context.watch<UserProvider>().user != null;
+          },
+          showPage: BeamPage(child: StartScreen()))
+    ],
+    locationBuilder: BeamerLocationBuilder(
+        beamLocations: [HomeLocation(), InputLocation()]));
 
 void main() {
   logger.d("My first log by logger pkg!!");
