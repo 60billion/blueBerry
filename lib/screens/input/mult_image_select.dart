@@ -56,7 +56,7 @@ class MultiImageSelect extends StatelessWidget {
                         IconButton(
                           onPressed: () {},
                           icon: Icon(Icons.remove_circle),
-                          color: Colors.black54,
+                          color: Colors.black87,
                         )
                       ],
                     ))

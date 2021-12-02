@@ -13,7 +13,7 @@ class ItemsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constrains) {
       double userWidth = MediaQuery.of(context).size.width;
-      logger.d(userWidth);
+      //logger.d(userWidth);
 
       return FutureBuilder(
           future: Future.delayed(Duration(seconds: 2)),
