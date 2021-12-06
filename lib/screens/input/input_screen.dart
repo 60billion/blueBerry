@@ -77,7 +77,7 @@ class _InputScreenState extends State<InputScreen> {
               },
               title: Text(
                 context.watch<CategoryNotifier>().currentCategoryInKor,
-                // style: TextStyle(fontSize: 16, color: Colors.black54),
+                style: TextStyle(fontSize: 16, color: Colors.black54),
               ),
               trailing: Icon(Icons.navigate_next),
             ),
