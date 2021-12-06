@@ -1,7 +1,9 @@
 import 'dart:typed_data';
+import 'package:blueberry/states/select_image_notifier.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/src/provider.dart';
 
 class MultiImageSelect extends StatefulWidget {
   const MultiImageSelect({
@@ -13,12 +15,13 @@ class MultiImageSelect extends StatefulWidget {
 }
 
 class _MultiImageSelectState extends State<MultiImageSelect> {
-  List<Uint8List> _images = [];
   bool _isPickingImages = false;
   final ImagePicker picker = ImagePicker();
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constrains) {
+      SelectImageNotifier selectImageNotifier =
+          context.watch<SelectImageNotifier>();
       double width = MediaQuery.of(context).size.width;
       return SizedBox(
         height: width / 3,
@@ -35,10 +38,9 @@ class _MultiImageSelectState extends State<MultiImageSelect> {
                   final List<XFile>? images =
                       await picker.pickMultiImage(imageQuality: 10);
                   if (images != null && images.isNotEmpty) {
-                    _images.clear();
-                    images.forEach((XFile) async {
-                      _images.add(await XFile.readAsBytes());
-                    });
+                    await context
+                        .read<SelectImageNotifier>()
+                        .setNewImages(images);
                   }
                   _isPickingImages = false;
                   setState(() {});
@@ -73,14 +75,15 @@ class _MultiImageSelectState extends State<MultiImageSelect> {
               ),
             ),
             ...List.generate(
-                _images.length,
+                selectImageNotifier.images.length,
                 (index) => Stack(
                       alignment: AlignmentDirectional.topEnd,
                       children: [
                         Padding(
                             padding: const EdgeInsets.only(
                                 right: 16, top: 16, bottom: 20),
-                            child: ExtendedImage.memory(_images[index],
+                            child: ExtendedImage.memory(
+                                selectImageNotifier.images[index],
                                 shape: BoxShape.rectangle,
                                 width: 100,
                                 height: 100,
@@ -103,8 +106,7 @@ class _MultiImageSelectState extends State<MultiImageSelect> {
                                     BorderRadius.all(Radius.circular(16.0)))),
                         IconButton(
                           onPressed: () {
-                            _images.removeAt(index);
-                            setState(() {});
+                            selectImageNotifier.removeImage(index);
                           },
                           icon: Icon(Icons.remove_circle),
                           color: Colors.black87,
