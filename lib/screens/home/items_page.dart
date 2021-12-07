@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:blueberry/data/item_model.dart';
+import 'package:blueberry/repo/item_service.dart';
 import 'package:blueberry/repo/user_service.dart';
 import 'package:blueberry/utils/logger.dart';
 import 'package:extended_image/extended_image.dart';
@@ -15,20 +17,20 @@ class ItemsPage extends StatelessWidget {
       double userWidth = MediaQuery.of(context).size.width;
       //logger.d(userWidth);
 
-      return FutureBuilder(
-          future: Future.delayed(Duration(seconds: 2)),
+      return FutureBuilder<List<ItemModel>>(
+          future: ItemService().getItems(),
           builder: (context, snap) {
             return AnimatedSwitcher(
               duration: Duration(milliseconds: 1000),
-              child: (snap.connectionState != ConnectionState.done)
-                  ? _shimmerListView(userWidth)
-                  : _listView(userWidth),
+              child: (snap.hasData && snap.data!.isNotEmpty)
+                  ? _listView(userWidth, snap.data!)
+                  : _shimmerListView(userWidth),
             );
           });
     });
   }
 
-  ListView _listView(double userWidth) {
+  ListView _listView(double userWidth, List<ItemModel> items) {
     return ListView.separated(
       padding: EdgeInsets.fromLTRB(userWidth * 0.04, userWidth * 0.04,
           userWidth * 0.04, userWidth * 0.04),
@@ -49,8 +51,11 @@ class ItemsPage extends StatelessWidget {
             child: Row(
               key: Key(index.toString()),
               children: [
-                ExtendedImage.network(
-                    'https://picsum.photos/100/100?random={$index+1}',
+                ExtendedImage.network(items[index].imageDownloadUrls[0],
+                    height: 100.0,
+                    width: 100.0,
+                    fit: BoxFit.cover,
+                    // 'https://picsum.photos/100/100?random={$index+1}',
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.all(Radius.circular(14.0))),
                 SizedBox(
@@ -61,15 +66,15 @@ class ItemsPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Number: $index",
+                        items[index].title,
                         style: TextStyle(fontSize: 18.0),
                       ),
                       Text(
-                        "Number: $index",
+                        items[index].category,
                         style: TextStyle(fontSize: 12.0),
                       ),
                       Text(
-                        "$index ,000원",
+                        items[index].price.toString() + " 원",
                         style: TextStyle(fontSize: 16.0),
                       ),
                       Expanded(
@@ -98,7 +103,7 @@ class ItemsPage extends StatelessWidget {
           ),
         );
       },
-      itemCount: 10,
+      itemCount: items.length,
     );
   }
 
