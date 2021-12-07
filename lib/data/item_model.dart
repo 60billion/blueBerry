@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 
 /// itemKey : "itemKey"
@@ -64,6 +65,9 @@ class ItemModel {
 
   ItemModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot)
       : this.fromJson(snapshot.data()!, snapshot.id, snapshot.reference);
+  ItemModel.fromQuerySnapshot(
+      QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
+      : this.fromJson(snapshot.data(), snapshot.id, snapshot.reference);
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -78,5 +82,10 @@ class ItemModel {
     map['geoFirePoint'] = geoFirePoint.data;
     map['createdDate'] = createdDate;
     return map;
+  }
+
+  static String getitemKey(String uid) {
+    String timeInMilli = DateTime.now().microsecondsSinceEpoch.toString();
+    return '${uid}_$timeInMilli';
   }
 }

@@ -3,14 +3,21 @@
 import 'dart:typed_data';
 
 import 'package:beamer/src/beamer.dart';
+import 'package:blueberry/constants/data_keys.dart';
 import 'package:blueberry/data/item_model.dart';
 import 'package:blueberry/repo/image_storage.dart';
+import 'package:blueberry/repo/item_service.dart';
+import 'package:blueberry/router/location.dart';
 import 'package:blueberry/states/category_notifier.dart';
 import 'package:blueberry/states/select_image_notifier.dart';
+import 'package:blueberry/states/user_provider.dart';
 import 'package:blueberry/utils/logger.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
+import 'package:location/location.dart';
 import 'package:provider/src/provider.dart';
 
 import 'mult_image_select.dart';
@@ -24,10 +31,54 @@ class InputScreen extends StatefulWidget {
 
 class _InputScreenState extends State<InputScreen> {
   bool _suggestPriceSelected = false;
+
+  void attemptCreateItem() async {
+    if (FirebaseAuth.instance.currentUser == null) return;
+    _isCreatingItem = true;
+    setState(() {});
+
+    final String userKey = FirebaseAuth.instance.currentUser!.uid;
+    final String itemKey = ItemModel.getitemKey(userKey);
+
+    List<Uint8List> images = context.read<SelectImageNotifier>().images;
+    List<String> downloadUrls =
+        await ImageStorage.uploadImages(images, itemKey) ?? [];
+
+    if (context.read<UserProvider>().userModel == null) return;
+
+    String title = _titleController.text;
+    String category = context.read<CategoryNotifier>().currentCategoryInEng;
+    int price = int.parse(_priceController.text.replaceAll(',', ''));
+    String detail = _detailController.text;
+    bool negotiable = _suggestPriceSelected;
+    String address = context.read<UserProvider>().userModel!.address;
+    DateTime createdDate = DateTime.now().toUtc();
+
+    ItemModel itemModel = ItemModel(
+        itemKey: itemKey,
+        userKey: userKey,
+        imageDownloadUrls: downloadUrls,
+        title: title,
+        category: category,
+        price: price,
+        negotiable: negotiable,
+        detail: detail,
+        address: address,
+        geoFirePoint: context.read<UserProvider>().userModel!.geoFirePoint,
+        createdDate: createdDate);
+
+    logger.d(downloadUrls);
+    await ItemService().createNewItem(itemModel.toJson(), itemKey);
+    _isCreatingItem = false;
+    setState(() {});
+    context.beamBack();
+  }
+
   TextEditingController _priceController = TextEditingController();
   UnderlineInputBorder _border =
       UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent));
-
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _detailController = TextEditingController();
   var _divider = Divider(
     height: 1.0,
     thickness: 1.0,
@@ -57,17 +108,7 @@ class _InputScreenState extends State<InputScreen> {
               ),
               actions: [
                 TextButton(
-                  onPressed: () async {
-                    _isCreatingItem = true;
-                    setState(() {});
-                    List<Uint8List> images =
-                        context.read<SelectImageNotifier>().images;
-                    List<String> downloadUrls =
-                        await ImageStorage.uploadImages(images) ?? [];
-                    logger.d(downloadUrls);
-                    _isCreatingItem = false;
-                    setState(() {});
-                  },
+                  onPressed: attemptCreateItem,
                   child: Text(
                     '완료',
                     style: TextStyle(color: Colors.white),
@@ -94,6 +135,7 @@ class _InputScreenState extends State<InputScreen> {
                 MultiImageSelect(),
                 _divider,
                 TextFormField(
+                  controller: _titleController,
                   decoration: InputDecoration(
                     hintText: '글 제목',
                     contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -123,9 +165,11 @@ class _InputScreenState extends State<InputScreen> {
                       child: TextFormField(
                           keyboardType: TextInputType.number,
                           controller: _priceController,
-                          inputFormatters: [MoneyInputFormatter()],
+                          inputFormatters: [
+                            MoneyInputFormatter(mantissaLength: 0)
+                          ],
                           onChanged: (value) {
-                            if (_priceController.text == "0.00") {
+                            if (_priceController.text == "0") {
                               _priceController.clear();
                             }
                             setState(() {});
@@ -178,6 +222,7 @@ class _InputScreenState extends State<InputScreen> {
                 ),
                 _divider,
                 TextFormField(
+                  controller: _detailController,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(

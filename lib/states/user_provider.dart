@@ -51,4 +51,5 @@ class UserProvider extends ChangeNotifier {
   }
 
   User? get user => _user;
+  UserModel? get userModel => _userModel;
 }

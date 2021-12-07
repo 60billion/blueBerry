@@ -43,10 +43,7 @@ class ItemsPage extends StatelessWidget {
       },
       itemBuilder: (context, index) {
         return InkWell(
-          onTap: () {
-            UserService().firestoreReadTest();
-            logger.d("tapped!!");
-          },
+          onTap: () {},
           child: SizedBox(
             height: 100,
             child: Row(

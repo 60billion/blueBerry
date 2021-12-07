@@ -2,6 +2,8 @@ import 'package:beamer/beamer.dart';
 import 'package:blueberry/router/location.dart';
 import 'package:blueberry/screens/start_screen.dart';
 import 'package:blueberry/screens/splash_screen.dart';
+import 'package:blueberry/states/category_notifier.dart';
+import 'package:blueberry/states/select_image_notifier.dart';
 import 'package:blueberry/states/user_provider.dart';
 import 'package:blueberry/utils/logger.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -67,17 +69,24 @@ class BlueBerry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<UserProvider>(
-      create: (BuildContext context) {
-        return UserProvider();
-      },
-      child: MaterialApp.router(
-          theme: ThemeData(
-            primarySwatch: Colors.purple,
-            textTheme: GoogleFonts.notoSansTextTheme(),
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider<UserProvider>(
+            create: (BuildContext context) => UserProvider(),
           ),
-          routeInformationParser: BeamerParser(),
-          routerDelegate: _routerDelegate),
-    );
+          ChangeNotifierProvider<CategoryNotifier>(
+            create: (BuildContext context) => CategoryNotifier(),
+          ),
+          ChangeNotifierProvider<SelectImageNotifier>(
+            create: (BuildContext context) => SelectImageNotifier(),
+          ),
+        ],
+        child: MaterialApp.router(
+            theme: ThemeData(
+              primarySwatch: Colors.purple,
+              textTheme: GoogleFonts.notoSansTextTheme(),
+            ),
+            routeInformationParser: BeamerParser(),
+            routerDelegate: _routerDelegate));
   }
 }
