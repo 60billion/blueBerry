@@ -15,6 +15,7 @@ class ItemDetailScreen extends StatefulWidget {
 
 class _ItemDetailScreenState extends State<ItemDetailScreen> {
   PageController _controller = PageController();
+  bool _isLikeClicked = false;
 
   @override
   void dispose() {
@@ -33,9 +34,70 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
               Size _size = MediaQuery.of(context).size;
               return SafeArea(
                 child: Scaffold(
+                  bottomNavigationBar: SafeArea(
+                    top: false,
+                    bottom: true,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              top: BorderSide(color: Colors.grey[300]!))),
+                      height: _size.width / 6,
+                      child: Padding(
+                        padding: EdgeInsets.all(_size.width / 36),
+                        child: Row(
+                          children: [
+                            //icon
+                            IconButton(
+                              icon: _isLikeClicked
+                                  ? Icon(
+                                      Icons.favorite,
+                                      color: Colors.purple,
+                                    )
+                                  : Icon(Icons.favorite_outline),
+                              color: Colors.grey,
+                              iconSize: _size.width / 12,
+                              onPressed: () {
+                                _isLikeClicked = !_isLikeClicked;
+                                setState(() {});
+                              },
+                            ),
+                            VerticalDivider(
+                              width: _size.width / 18,
+                              thickness: 1.0,
+                              color: Colors.grey,
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  itemModel.price.toString() + ' 원',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: _size.width / 24),
+                                ),
+                                Text(
+                                  itemModel.negotiable ? "가격제안가능" : "가격제안불가",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                )
+                              ],
+                            ),
+                            Expanded(child: Container()),
+                            ElevatedButton(
+                                onPressed: () {}, child: Text("채팅으로 거래하기"))
+                            //expanded_container
+                            //button
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                   body: CustomScrollView(
                     slivers: [
                       SliverAppBar(
+                        title: Text(itemModel.title),
                         expandedHeight: _size.width,
                         pinned: true,
                         flexibleSpace: FlexibleSpaceBar(
@@ -155,6 +217,10 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               )
                             ],
                           ),
+                        ),
+                        Container(
+                          height: _size.height * 2,
+                          color: Colors.white,
                         )
                       ]))
                     ],
