@@ -50,6 +50,7 @@ dependencies:
   geoflutterfire: ^3.0.1
   image_picker: ^0.8.4
   firebase_storage: ^10.2.0
+  smooth_page_indicator: ^1.0.0+2
 
 dev_dependencies:
   flutter_test:

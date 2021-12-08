@@ -45,6 +45,7 @@ class ItemModel {
   });
 
   ItemModel.fromJson(Map<String, dynamic> json, this.userKey, this.reference) {
+    itemKey = json['itemKey'] ?? "";
     userKey = json['userKey'] ?? "";
     imageDownloadUrls = json['imageDownloadUrls'] != null
         ? json['imageDownloadUrls'].cast<String>()
@@ -71,6 +72,7 @@ class ItemModel {
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
+    map['itemKey'] = itemKey;
     map['userKey'] = userKey;
     map['imageDownloadUrls'] = imageDownloadUrls;
     map['title'] = title;

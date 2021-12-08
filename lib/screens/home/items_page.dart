@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:beamer/src/beamer.dart';
 import 'package:blueberry/data/item_model.dart';
 import 'package:blueberry/repo/item_service.dart';
 import 'package:blueberry/repo/user_service.dart';
+import 'package:blueberry/router/location.dart';
 import 'package:blueberry/utils/logger.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +47,9 @@ class ItemsPage extends StatelessWidget {
       },
       itemBuilder: (context, index) {
         return InkWell(
-          onTap: () {},
+          onTap: () {
+            context.beamToNamed('/$LOCATION_ITEM/${items[index].itemKey}');
+          },
           child: SizedBox(
             height: 100,
             child: Row(

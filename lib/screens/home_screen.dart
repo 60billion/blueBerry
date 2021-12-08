@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:beamer/src/beamer.dart';
+import 'package:blueberry/router/location.dart';
 import 'package:blueberry/screens/home/items_page.dart';
 import 'package:blueberry/states/user_provider.dart';
 import 'package:blueberry/widgets/expandable_fab.dart';
@@ -50,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.purple,
             elevation: 4.0,
             onPressed: () {
-              context.beamToNamed('/input');
+              context.beamToNamed('/$LOCATION_INPUT');
             },
             shape: CircleBorder(),
             height: 40,

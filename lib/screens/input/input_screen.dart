@@ -148,7 +148,8 @@ class _InputScreenState extends State<InputScreen> {
                 ListTile(
                   dense: true,
                   onTap: () {
-                    context.beamToNamed('/input/category_input');
+                    context.beamToNamed(
+                        '/$LOCATION_INPUT/$LOCATION_CATEGORY_INPUT');
                   },
                   title: Text(
                     context.watch<CategoryNotifier>().currentCategoryInKor,
