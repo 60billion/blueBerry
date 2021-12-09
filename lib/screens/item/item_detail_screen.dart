@@ -1,5 +1,8 @@
 import 'package:blueberry/data/item_model.dart';
 import 'package:blueberry/repo/item_service.dart';
+import 'package:blueberry/screens/item/similar_item.dart';
+import 'package:blueberry/states/category_notifier.dart';
+import 'package:blueberry/utils/date_formatter.dart';
 import 'package:blueberry/utils/logger.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +19,10 @@ class ItemDetailScreen extends StatefulWidget {
 class _ItemDetailScreenState extends State<ItemDetailScreen> {
   PageController _controller = PageController();
   bool _isLikeClicked = false;
+  Widget _divider = Divider(
+    thickness: 1,
+    height: 0,
+  );
 
   @override
   void dispose() {
@@ -34,195 +41,26 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
               Size _size = MediaQuery.of(context).size;
               return SafeArea(
                 child: Scaffold(
-                  bottomNavigationBar: SafeArea(
-                    top: false,
-                    bottom: true,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                              top: BorderSide(color: Colors.grey[300]!))),
-                      height: _size.width / 6,
-                      child: Padding(
-                        padding: EdgeInsets.all(_size.width / 36),
-                        child: Row(
-                          children: [
-                            //icon
-                            IconButton(
-                              icon: _isLikeClicked
-                                  ? Icon(
-                                      Icons.favorite,
-                                      color: Colors.purple,
-                                    )
-                                  : Icon(Icons.favorite_outline),
-                              color: Colors.grey,
-                              iconSize: _size.width / 12,
-                              onPressed: () {
-                                _isLikeClicked = !_isLikeClicked;
-                                setState(() {});
-                              },
-                            ),
-                            VerticalDivider(
-                              width: _size.width / 18,
-                              thickness: 1.0,
-                              color: Colors.grey,
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  itemModel.price.toString() + ' 원',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: _size.width / 24),
-                                ),
-                                Text(
-                                  itemModel.negotiable ? "가격제안가능" : "가격제안불가",
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                  ),
-                                )
-                              ],
-                            ),
-                            Expanded(child: Container()),
-                            ElevatedButton(
-                                onPressed: () {}, child: Text("채팅으로 거래하기"))
-                            //expanded_container
-                            //button
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  bottomNavigationBar: bottomNav(
+                      _size, itemModel), //Extracted (bottom in detail Page)
                   body: CustomScrollView(
                     slivers: [
-                      SliverAppBar(
-                        title: Text(itemModel.title),
-                        expandedHeight: _size.width,
-                        pinned: true,
-                        flexibleSpace: FlexibleSpaceBar(
-                          background: Stack(children: [
-                            PageView.builder(
-                              controller: _controller,
-                              allowImplicitScrolling:
-                                  true, //이미지 넘길때 로딩 시간을 줄여준다.
-                              itemBuilder: (context, index) {
-                                return ExtendedImage.network(
-                                  itemModel.imageDownloadUrls[index],
-                                  fit: BoxFit.cover,
-                                  scale: 0.1,
-                                );
-                              },
-                              itemCount: itemModel.imageDownloadUrls.length,
-                            ),
-                            Positioned(
-                              bottom: 16,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                child: Center(
-                                  child: SmoothPageIndicator(
-                                      controller: _controller,
-                                      count: itemModel.imageDownloadUrls.length,
-                                      effect: WormEffect(
-                                          activeDotColor: Colors.purple,
-                                          dotColor: Colors.white60),
-                                      onDotClicked: (index) {}),
-                                ),
-                              ),
-                            )
-                          ]),
+                      sliverAppbar(itemModel, _size), //Extracted (AppBar)
+                      sliverList(_size, itemModel), //Extracted (List)
+                      SliverPadding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: _size.width / 26),
+                        sliver: SliverGrid.count(
+                          mainAxisSpacing: _size.width / 100,
+                          crossAxisSpacing: _size.width / 26,
+                          crossAxisCount: 2,
+                          childAspectRatio: 5 / 6,
+                          children: List.generate(
+                              itemModel.imageDownloadUrls.length,
+                              (index) => SimilarItem(
+                                  index, itemModel.imageDownloadUrls[index])),
                         ),
                       ),
-                      SliverList(
-                          delegate: SliverChildListDelegate([
-                        Padding(
-                          padding: EdgeInsets.all(_size.width / 24),
-                          child: Row(
-                            children: [
-                              ExtendedImage.network(
-                                itemModel.imageDownloadUrls[0],
-                                fit: BoxFit.cover,
-                                width: _size.width / 10,
-                                height: _size.width / 10,
-                                shape: BoxShape.circle,
-                              ),
-                              SizedBox(
-                                width: _size.width / 30,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(itemModel.title,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: _size.width / 26)),
-                                  Text(
-                                    itemModel.category,
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: _size.width / 30),
-                                  )
-                                ],
-                              ),
-                              Expanded(child: Container()),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: _size.width / 10,
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              '37.3°C',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.purple),
-                                            ),
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(1),
-                                              child: LinearProgressIndicator(
-                                                color: Colors.purple,
-                                                value: 0.373,
-                                                minHeight: 3,
-                                                backgroundColor:
-                                                    Colors.grey[200],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: _size.width / 100,
-                                      ),
-                                      Icon(
-                                        Icons.mood_rounded,
-                                        color: Colors.purple,
-                                      )
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: _size.width / 100,
-                                  ),
-                                  Text(
-                                    "매너온도",
-                                    style: TextStyle(
-                                        fontSize: _size.width / 30,
-                                        decoration: TextDecoration.underline),
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                        Container(
-                          height: _size.height * 2,
-                          color: Colors.white,
-                        )
-                      ]))
                     ],
                   ),
                 ),
@@ -236,5 +74,259 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             );
           }
         });
+  }
+
+  SliverList sliverList(Size _size, ItemModel itemModel) {
+    return SliverList(
+        delegate: SliverChildListDelegate([
+      userInfo(_size, itemModel), //Extracted (UserInfo in detail Page)
+      _divider,
+      Padding(
+          padding: EdgeInsets.all(_size.width / 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(
+                itemModel.title,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: _size.width / 20),
+              ),
+              SizedBox(height: _size.width / 80),
+              Row(
+                children: [
+                  Text(categoriesMapEngToKor[itemModel.category] ?? "미분류"),
+                  Text(
+                      ' · ${DateFormatter.dateForrmatter(itemModel.createdDate)}')
+                ],
+              ),
+              SizedBox(height: _size.width / 20),
+              Text(itemModel.detail,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  )),
+              SizedBox(height: _size.width / 20),
+              Text("조회 44")
+            ],
+          )),
+      _divider,
+      Padding(
+        padding:
+            EdgeInsets.only(left: _size.width / 24, right: _size.width / 24),
+        child: TextButton(
+            style: TextButton.styleFrom(padding: EdgeInsets.zero),
+            onPressed: () {},
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text("이 게시글 신고하기",
+                    style: TextStyle(fontSize: _size.width / 24)))),
+      ),
+      _divider,
+      Padding(
+        padding:
+            EdgeInsets.only(left: _size.width / 24, right: _size.width / 24),
+        child: Row(
+          children: [
+            Text(
+              '판매자의 다른 상품',
+              style: TextStyle(fontSize: _size.width / 24),
+            ),
+            Expanded(child: Container()),
+            TextButton(onPressed: () {}, child: Text('더보기'))
+          ],
+        ),
+      ),
+    ]));
+  }
+
+  Padding userInfo(Size _size, ItemModel itemModel) {
+    return Padding(
+      padding: EdgeInsets.all(_size.width / 24),
+      child: Row(
+        children: [
+          ExtendedImage.network(
+            itemModel.imageDownloadUrls[0],
+            fit: BoxFit.cover,
+            width: _size.width / 10,
+            height: _size.width / 10,
+            shape: BoxShape.circle,
+          ),
+          SizedBox(
+            width: _size.width / 30,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(itemModel.title,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: _size.width / 26)),
+              Text(
+                categoriesMapEngToKor[itemModel.category] ?? "미분류",
+                style:
+                    TextStyle(color: Colors.grey, fontSize: _size.width / 30),
+              )
+            ],
+          ),
+          Expanded(child: Container()),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Row(
+                children: [
+                  SizedBox(
+                    width: _size.width / 10,
+                    child: Column(
+                      children: [
+                        Text(
+                          '37.3°C',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.purple),
+                        ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(1),
+                          child: LinearProgressIndicator(
+                            color: Colors.purple,
+                            value: 0.373,
+                            minHeight: 3,
+                            backgroundColor: Colors.grey[200],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: _size.width / 100,
+                  ),
+                  Icon(
+                    Icons.mood_rounded,
+                    color: Colors.purple,
+                  )
+                ],
+              ),
+              SizedBox(
+                height: _size.width / 100,
+              ),
+              Text(
+                "매너온도",
+                style: TextStyle(
+                    fontSize: _size.width / 30,
+                    decoration: TextDecoration.underline),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  SliverAppBar sliverAppbar(ItemModel itemModel, Size _size) {
+    return SliverAppBar(
+      title: Text(itemModel.title),
+      expandedHeight: _size.width,
+      pinned: true,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Stack(children: [
+          PageView.builder(
+            controller: _controller,
+            allowImplicitScrolling: true, //이미지 넘길때 로딩 시간을 줄여준다.
+            itemBuilder: (context, index) {
+              return ExtendedImage.network(
+                itemModel.imageDownloadUrls[index],
+                fit: BoxFit.cover,
+                scale: 0.1,
+              );
+            },
+            itemCount: itemModel.imageDownloadUrls.length,
+          ),
+          Positioned(
+            bottom: 16,
+            left: 0,
+            right: 0,
+            child: Container(
+              child: Center(
+                child: SmoothPageIndicator(
+                    controller: _controller,
+                    count: itemModel.imageDownloadUrls.length,
+                    effect: WormEffect(
+                        activeDotColor: Colors.purple,
+                        dotColor: Colors.white60),
+                    onDotClicked: (index) {}),
+              ),
+            ),
+          )
+        ]),
+      ),
+    );
+  }
+
+  SafeArea bottomNav(Size _size, ItemModel itemModel) {
+    return SafeArea(
+      top: false,
+      bottom: true,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 40,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        height: _size.width / 6,
+        child: Padding(
+          padding: EdgeInsets.all(_size.width / 36),
+          child: Row(
+            children: [
+              //icon
+              IconButton(
+                icon: _isLikeClicked
+                    ? Icon(
+                        Icons.favorite,
+                        color: Colors.purple,
+                      )
+                    : Icon(Icons.favorite_outline),
+                color: Colors.grey,
+                iconSize: _size.width / 12,
+                onPressed: () {
+                  _isLikeClicked = !_isLikeClicked;
+                  setState(() {});
+                },
+              ),
+              VerticalDivider(
+                width: _size.width / 18,
+                thickness: 1.0,
+                color: Colors.grey,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    itemModel.price.toString() + ' 원',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: _size.width / 24),
+                  ),
+                  Text(
+                    itemModel.negotiable ? "가격제안가능" : "가격제안불가",
+                    style: TextStyle(
+                      color: Colors.grey,
+                    ),
+                  )
+                ],
+              ),
+              Expanded(child: Container()),
+              ElevatedButton(onPressed: () {}, child: Text("채팅으로 거래하기"))
+              //expanded_container
+              //button
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
