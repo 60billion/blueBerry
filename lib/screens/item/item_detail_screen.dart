@@ -47,20 +47,51 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     slivers: [
                       sliverAppbar(itemModel, _size), //Extracted (AppBar)
                       sliverList(_size, itemModel), //Extracted (List)
-                      SliverPadding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: _size.width / 26),
-                        sliver: SliverGrid.count(
-                          mainAxisSpacing: _size.width / 100,
-                          crossAxisSpacing: _size.width / 26,
-                          crossAxisCount: 2,
-                          childAspectRatio: 5 / 6,
-                          children: List.generate(
-                              itemModel.imageDownloadUrls.length,
-                              (index) => SimilarItem(
-                                  index, itemModel.imageDownloadUrls[index])),
+                      SliverToBoxAdapter(
+                        child: FutureBuilder<List<ItemModel>>(
+                          future: ItemService().getuserItems(itemModel.userKey,
+                              itemKey: widget.itemKey),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: _size.width / 26),
+                                child: GridView.count(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  mainAxisSpacing: _size.width / 100,
+                                  crossAxisSpacing: _size.width / 26,
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 5 / 6,
+                                  children: List.generate(
+                                      snapshot.data!.length,
+                                      (index) =>
+                                          SimilarItem(snapshot.data![index])),
+                                ),
+                              );
+                            } else {
+                              return Center(
+                                  child: Container(
+                                child: Text("판매자의 다른 상품이 없습니다."),
+                              ));
+                            }
+                          },
                         ),
                       ),
+
+                      // SliverPadding(
+                      //   padding:EdgeInsets.symmetric(horizontal: _size.width / 26),
+                      //   sliver: SliverGrid.count(
+                      //     mainAxisSpacing: _size.width / 100,
+                      //     crossAxisSpacing: _size.width / 26,
+                      //     crossAxisCount: 2,
+                      //     childAspectRatio: 5 / 6,
+                      //     children: List.generate(
+                      //         itemModel.imageDownloadUrls.length,
+                      //         (index) => SimilarItem(
+                      //             index, itemModel.imageDownloadUrls[index])),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

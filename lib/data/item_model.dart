@@ -56,12 +56,14 @@ class ItemModel {
     negotiable = json['negotiable'] ?? false;
     detail = json['detail'] ?? "";
     address = json['address'] ?? "";
-    geoFirePoint = GeoFirePoint((json['geoFirePoint']['geopoint']).latitude,
-        (json['geoFirePoint']['geopoint']).longitude);
+    geoFirePoint = json["geoFirePotin"] == null
+        ? GeoFirePoint(0, 0)
+        : GeoFirePoint((json['geoFirePoint']['geopoint']).latitude,
+            (json['geoFirePoint']['geopoint']).longitude);
     createdDate = json['createdDate'] == null
         ? DateTime.now().toUtc()
         : (json['createdDate'] as Timestamp).toDate();
-    reference = json['reference'];
+//    reference = json['reference'];
   }
 
   ItemModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot)
@@ -83,6 +85,16 @@ class ItemModel {
     map['address'] = address;
     map['geoFirePoint'] = geoFirePoint.data;
     map['createdDate'] = createdDate;
+    return map;
+  }
+
+  Map<String, dynamic> toMinJson() {
+    final map = <String, dynamic>{};
+    map['itemKey'] = itemKey;
+    map['userKey'] = userKey;
+    map['imageDownloadUrls'] = imageDownloadUrls.sublist(0, 1);
+    map['title'] = title;
+    map['price'] = price;
     return map;
   }
 

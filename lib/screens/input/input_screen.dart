@@ -68,7 +68,7 @@ class _InputScreenState extends State<InputScreen> {
         createdDate: createdDate);
 
     logger.d(downloadUrls);
-    await ItemService().createNewItem(itemModel.toJson(), itemKey);
+    await ItemService().createNewItem(itemModel, itemKey, userKey);
     _isCreatingItem = false;
     setState(() {});
     context.beamBack();
