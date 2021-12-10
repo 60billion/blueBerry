@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:beamer/src/beamer.dart';
+import 'package:blueberry/data/user_model.dart';
 import 'package:blueberry/router/location.dart';
 import 'package:blueberry/screens/home/items_page.dart';
+import 'package:blueberry/screens/home/map_page.dart';
 import 'package:blueberry/states/user_provider.dart';
 import 'package:blueberry/widgets/expandable_fab.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,9 +28,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const List<Widget> _widgetOptions = <Widget>[
+    List<Widget> _widgetOptions = <Widget>[
       ItemsPage(),
-      Text("Location"), //the Text widgets will change a page class
+      (context.read<UserProvider>().userModel == null)
+          ? Container(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : MapPage(context
+              .read<UserProvider>()
+              .userModel!), //the Text widgets will change a page class
       Text("chatting"),
       Text("profile")
     ];
