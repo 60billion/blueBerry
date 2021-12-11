@@ -56,7 +56,7 @@ class ItemModel {
     negotiable = json['negotiable'] ?? false;
     detail = json['detail'] ?? "";
     address = json['address'] ?? "";
-    geoFirePoint = json["geoFirePotin"] == null
+    geoFirePoint = json["geoFirePoint"] == null
         ? GeoFirePoint(0, 0)
         : GeoFirePoint((json['geoFirePoint']['geopoint']).latitude,
             (json['geoFirePoint']['geopoint']).longitude);
@@ -68,6 +68,7 @@ class ItemModel {
 
   ItemModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot)
       : this.fromJson(snapshot.data()!, snapshot.id, snapshot.reference);
+
   ItemModel.fromQuerySnapshot(
       QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
       : this.fromJson(snapshot.data(), snapshot.id, snapshot.reference);

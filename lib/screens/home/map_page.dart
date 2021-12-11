@@ -1,5 +1,6 @@
+import 'package:blueberry/data/item_model.dart';
 import 'package:blueberry/data/user_model.dart';
-import 'package:blueberry/utils/logger.dart';
+import 'package:blueberry/repo/item_service.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:latlng/latlng.dart';
@@ -67,24 +68,44 @@ class _MapPageState extends State<MapPage> {
             widget._userModel.geoFirePoint.latitude,
             widget._userModel.geoFirePoint.longitude));
         final myLocationWidget = _buildMarkerWidget(myLocationOnMap);
-        return Stack(children: [
-          GestureDetector(
-            onScaleStart: _scaleStart,
-            onScaleUpdate: _scaleUpdate,
-            child: Map(
-              controller: controller,
-              builder: (context, x, y, z) {
-                final url =
-                    'https://www.google.com/maps/vt/pb=!1m4!1m3!1i$z!2i$x!3i$y!2m3!1e0!2sm!3i420120488!3m7!2sen!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0!23i4111425';
-                return ExtendedImage.network(
-                  url,
-                  fit: BoxFit.cover,
-                );
-              },
-            ),
-          ),
-          myLocationWidget
-        ]);
+
+        Size size = MediaQuery.of(context).size;
+        final middleOnScreen = Offset(size.width / 2, size.height / 2);
+        final latlngOnMap = transformer.fromXYCoordsToLatLng(middleOnScreen);
+        //print('${latlngOnMap.latitude}, ${latlngOnMap.longitude}');
+
+        return FutureBuilder<List<ItemModel>>(
+            future: ItemService().getNearByItems(
+                "NBa46fn6PlaOBAKVOJgih1GGZuJ2", latlngOnMap, 50),
+            builder: (context, snapshot) {
+              List<Widget> nearByItems = [];
+              if (snapshot.hasData) {
+                snapshot.data!.forEach((item) {
+                  final offset = transformer.fromLatLngToXYCoords(LatLng(
+                      item.geoFirePoint.latitude, item.geoFirePoint.longitude));
+                  nearByItems.add(_buildMarkerWidget(offset));
+                });
+              }
+              return Stack(children: [
+                GestureDetector(
+                  onScaleStart: _scaleStart,
+                  onScaleUpdate: _scaleUpdate,
+                  child: Map(
+                    controller: controller,
+                    builder: (context, x, y, z) {
+                      final url =
+                          'https://www.google.com/maps/vt/pb=!1m4!1m3!1i$z!2i$x!3i$y!2m3!1e0!2sm!3i420120488!3m7!2sen!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0!23i4111425';
+                      return ExtendedImage.network(
+                        url,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+                ),
+                myLocationWidget,
+                ...nearByItems
+              ]);
+            });
       },
       controller: controller,
     );
