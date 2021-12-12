@@ -85,30 +85,30 @@ class ItemService {
     var field = 'geoFirePoint';
     List<ItemModel> items = [];
 
-    Stream<List<DocumentSnapshot<Map<String, dynamic>>>> stream = await geo
-        .collection(collectionRef: itemCol)
-        .within(center: center, radius: radius, field: field);
-
-    stream.listen((List<DocumentSnapshot<Map<String, dynamic>>> documentList) {
-      // print(documentList);
-      documentList.forEach((element) {
-        ItemModel itemModel = ItemModel.fromSnapshot(element);
-        items.add(itemModel);
-      });
-    });
-    return items;
-    // List<DocumentSnapshot<Map<String, dynamic>>> snapshot = await geo
+    //스트림으로 받아오는 방법
+    //스트림 방식이라 맵 위에서 아이콘이 계속 리로딩 되어 핀 UI가 보기 불편함
+    // Stream<List<DocumentSnapshot<Map<String, dynamic>>>> stream = geo
     //     .collection(collectionRef: itemCol)
-    //     .within(center: center, radius: radius, field: field)
-    //     .first;
+    //     .within(center: center, radius: radius, field: field);
 
-    // for (var i = 0; i < snapshot.length; i++) {
-    //   ItemModel itemModel = ItemModel.fromSnapshot(snapshot[i]);
-    //   print(
-    //       "${i}:::${itemModel.title},${itemModel.geoFirePoint.latitude}, ${itemModel.geoFirePoint.latitude}");
-    //   //todo: remove my own item
-    //   items.add(itemModel);
-    //}
+    // stream.listen((List<DocumentSnapshot<Map<String, dynamic>>> documentList) {
+    //   // print(documentList);
+    //   documentList.forEach((element) {
+    //     ItemModel itemModel = ItemModel.fromSnapshot(element);
+    //     items.add(itemModel);
+    //   });
+    // });
     //return items;
+    List<DocumentSnapshot<Map<String, dynamic>>> snapshot = await geo
+        .collection(collectionRef: itemCol)
+        .within(center: center, radius: radius, field: field)
+        .first;
+
+    for (var i = 0; i < snapshot.length; i++) {
+      ItemModel itemModel = ItemModel.fromSnapshot(snapshot[i]);
+      //todo: remove my own item
+      items.add(itemModel);
+    }
+    return items;
   }
 }

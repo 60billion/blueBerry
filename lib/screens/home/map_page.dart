@@ -1,6 +1,8 @@
+import 'package:beamer/src/beamer.dart';
 import 'package:blueberry/data/item_model.dart';
 import 'package:blueberry/data/user_model.dart';
 import 'package:blueberry/repo/item_service.dart';
+import 'package:blueberry/router/location.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:latlng/latlng.dart';
@@ -51,6 +53,24 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
+  Widget _buildImageMarkerWidget(Offset offset, ItemModel itemModel) {
+    return Positioned(
+        left: offset.dx,
+        top: offset.dy,
+        width: 36.0,
+        height: 36.0,
+        child: InkWell(
+          onTap: () {
+            context.beamToNamed('/$LOCATION_ITEM/${itemModel.itemKey}');
+          },
+          child: ExtendedImage.network(
+            itemModel.imageDownloadUrls[0],
+            shape: BoxShape.circle,
+            fit: BoxFit.cover,
+          ),
+        ));
+  }
+
   @override
   void initState() {
     controller = MapController(
@@ -67,7 +87,8 @@ class _MapPageState extends State<MapPage> {
         final myLocationOnMap = transformer.fromLatLngToXYCoords(LatLng(
             widget._userModel.geoFirePoint.latitude,
             widget._userModel.geoFirePoint.longitude));
-        final myLocationWidget = _buildMarkerWidget(myLocationOnMap);
+        final myLocationWidget =
+            _buildMarkerWidget(myLocationOnMap, color: Colors.black87);
 
         Size size = MediaQuery.of(context).size;
         final middleOnScreen = Offset(size.width / 2, size.height / 2);
@@ -75,15 +96,15 @@ class _MapPageState extends State<MapPage> {
         //print('${latlngOnMap.latitude}, ${latlngOnMap.longitude}');
 
         return FutureBuilder<List<ItemModel>>(
-            future: ItemService().getNearByItems(
-                "NBa46fn6PlaOBAKVOJgih1GGZuJ2", latlngOnMap, 50),
+            future: ItemService()
+                .getNearByItems(widget._userModel.userKey, latlngOnMap, 50),
             builder: (context, snapshot) {
               List<Widget> nearByItems = [];
               if (snapshot.hasData) {
                 snapshot.data!.forEach((item) {
                   final offset = transformer.fromLatLngToXYCoords(LatLng(
                       item.geoFirePoint.latitude, item.geoFirePoint.longitude));
-                  nearByItems.add(_buildMarkerWidget(offset));
+                  nearByItems.add(_buildImageMarkerWidget(offset, item));
                 });
               }
               return Stack(children: [
