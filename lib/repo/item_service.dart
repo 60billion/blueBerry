@@ -82,7 +82,7 @@ class ItemService {
     GeoFirePoint center = GeoFirePoint(latLng.latitude, latLng.longitude);
     final itemCol = FirebaseFirestore.instance.collection(COL_ITEMS);
     double radius = radi;
-    var field = 'geoFirePoint';
+    var field = DOC_GEOFIREPOINT;
     List<ItemModel> items = [];
 
     //스트림으로 받아오는 방법

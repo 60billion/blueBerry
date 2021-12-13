@@ -1,12 +1,17 @@
+import 'package:blueberry/data/chatroom_model.dart';
 import 'package:blueberry/data/item_model.dart';
+import 'package:blueberry/data/user_model.dart';
+import 'package:blueberry/repo/chat_service.dart';
 import 'package:blueberry/repo/item_service.dart';
 import 'package:blueberry/screens/item/similar_item.dart';
 import 'package:blueberry/states/category_notifier.dart';
+import 'package:blueberry/states/user_provider.dart';
 import 'package:blueberry/utils/date_formatter.dart';
 import 'package:blueberry/utils/logger.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:provider/provider.dart';
 
 class ItemDetailScreen extends StatefulWidget {
   final String itemKey;
@@ -30,6 +35,28 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     super.dispose();
   }
 
+  void _goToChatroom(ItemModel itemModel, UserModel userModel) {
+    String chatroomKey =
+        ChatroomModel.generateChatRoomKey(userModel.userKey, itemModel.itemKey);
+
+    ChatroomModel _chatroomModel = ChatroomModel(
+        itemImage: itemModel.imageDownloadUrls[0],
+        itemTitle: itemModel.title,
+        itemKey: itemModel.itemKey,
+        itemAddress: itemModel.address,
+        itemPrice: itemModel.price,
+        sellerKey: itemModel.userKey,
+        buyerKey: userModel.userKey,
+        sellerImage:
+            "https://minimaltoolkit.com/images/randomdata/male/101.jpg",
+        buyerImage:
+            "https://minimaltoolkit.com/images/randomdata/female/41.jpg",
+        geoFirePoint: itemModel.geoFirePoint,
+        chatroomKey: chatroomKey,
+        lastMsgTime: DateTime.now());
+    ChatService().createNewChatroom(_chatroomModel);
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<ItemModel>(
@@ -37,6 +64,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             ItemModel itemModel = snapshot.data!;
+
             return LayoutBuilder(builder: (context, constraints) {
               Size _size = MediaQuery.of(context).size;
               return SafeArea(
@@ -351,7 +379,13 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 ],
               ),
               Expanded(child: Container()),
-              ElevatedButton(onPressed: () {}, child: Text("채팅으로 거래하기"))
+              ElevatedButton(
+                  onPressed: () {
+                    UserModel userModel =
+                        context.read<UserProvider>().userModel!;
+                    _goToChatroom(itemModel, userModel);
+                  },
+                  child: Text("채팅으로 거래하기"))
               //expanded_container
               //button
             ],

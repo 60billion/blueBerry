@@ -1,3 +1,4 @@
+import 'package:blueberry/constants/data_keys.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
@@ -45,24 +46,24 @@ class ItemModel {
   });
 
   ItemModel.fromJson(Map<String, dynamic> json, this.userKey, this.reference) {
-    itemKey = json['itemKey'] ?? "";
-    userKey = json['userKey'] ?? "";
-    imageDownloadUrls = json['imageDownloadUrls'] != null
-        ? json['imageDownloadUrls'].cast<String>()
+    itemKey = json[DOC_ITEMKEY] ?? "";
+    userKey = json[DOC_USERKEY] ?? "";
+    imageDownloadUrls = json[DOC_IMAGEDOWNLOADURLS] != null
+        ? json[DOC_IMAGEDOWNLOADURLS].cast<String>()
         : [];
-    title = json['title'] ?? "";
-    category = json['category'] ?? "none";
-    price = json['price'] ?? 0;
-    negotiable = json['negotiable'] ?? false;
-    detail = json['detail'] ?? "";
-    address = json['address'] ?? "";
-    geoFirePoint = json["geoFirePoint"] == null
+    title = json[DOC_TITLE] ?? "";
+    category = json[DOC_CATEGORY] ?? "none";
+    price = json[DOC_PRICE] ?? 0;
+    negotiable = json[DOC_NEGOTIABLE] ?? false;
+    detail = json[DOC_DETAIL] ?? "";
+    address = json[DOC_ADDRESS] ?? "";
+    geoFirePoint = json[DOC_GEOFIREPOINT] == null
         ? GeoFirePoint(0, 0)
-        : GeoFirePoint((json['geoFirePoint']['geopoint']).latitude,
-            (json['geoFirePoint']['geopoint']).longitude);
-    createdDate = json['createdDate'] == null
+        : GeoFirePoint((json[DOC_GEOFIREPOINT][DOC_GEOPOINT]).latitude,
+            (json[DOC_GEOFIREPOINT][DOC_GEOPOINT]).longitude);
+    createdDate = json[DOC_CREATEDDATE] == null
         ? DateTime.now().toUtc()
-        : (json['createdDate'] as Timestamp).toDate();
+        : (json[DOC_CREATEDDATE] as Timestamp).toDate();
 //    reference = json['reference'];
   }
 
@@ -75,27 +76,27 @@ class ItemModel {
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['itemKey'] = itemKey;
-    map['userKey'] = userKey;
-    map['imageDownloadUrls'] = imageDownloadUrls;
-    map['title'] = title;
-    map['category'] = category;
-    map['price'] = price;
-    map['negotiable'] = negotiable;
-    map['detail'] = detail;
-    map['address'] = address;
-    map['geoFirePoint'] = geoFirePoint.data;
-    map['createdDate'] = createdDate;
+    map[DOC_ITEMKEY] = itemKey;
+    map[DOC_USERKEY] = userKey;
+    map[DOC_IMAGEDOWNLOADURLS] = imageDownloadUrls;
+    map[DOC_TITLE] = title;
+    map[DOC_CATEGORY] = category;
+    map[DOC_PRICE] = price;
+    map[DOC_NEGOTIABLE] = negotiable;
+    map[DOC_DETAIL] = detail;
+    map[DOC_ADDRESS] = address;
+    map[DOC_GEOFIREPOINT] = geoFirePoint.data;
+    map[DOC_CREATEDDATE] = createdDate;
     return map;
   }
 
   Map<String, dynamic> toMinJson() {
     final map = <String, dynamic>{};
-    map['itemKey'] = itemKey;
-    map['userKey'] = userKey;
-    map['imageDownloadUrls'] = imageDownloadUrls.sublist(0, 1);
-    map['title'] = title;
-    map['price'] = price;
+    map[DOC_ITEMKEY] = itemKey;
+    map[DOC_USERKEY] = userKey;
+    map[DOC_IMAGEDOWNLOADURLS] = imageDownloadUrls.sublist(0, 1);
+    map[DOC_TITLE] = title;
+    map[DOC_PRICE] = price;
     return map;
   }
 
