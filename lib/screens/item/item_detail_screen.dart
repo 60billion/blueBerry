@@ -1,8 +1,10 @@
+import 'package:beamer/src/beamer.dart';
 import 'package:blueberry/data/chatroom_model.dart';
 import 'package:blueberry/data/item_model.dart';
 import 'package:blueberry/data/user_model.dart';
 import 'package:blueberry/repo/chat_service.dart';
 import 'package:blueberry/repo/item_service.dart';
+import 'package:blueberry/router/location.dart';
 import 'package:blueberry/screens/item/similar_item.dart';
 import 'package:blueberry/states/category_notifier.dart';
 import 'package:blueberry/states/user_provider.dart';
@@ -35,7 +37,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     super.dispose();
   }
 
-  void _goToChatroom(ItemModel itemModel, UserModel userModel) {
+  void _goToChatroom(ItemModel itemModel, UserModel userModel) async {
     String chatroomKey =
         ChatroomModel.generateChatRoomKey(userModel.userKey, itemModel.itemKey);
 
@@ -54,7 +56,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         geoFirePoint: itemModel.geoFirePoint,
         chatroomKey: chatroomKey,
         lastMsgTime: DateTime.now());
-    ChatService().createNewChatroom(_chatroomModel);
+    await ChatService().createNewChatroom(_chatroomModel);
+
+    context.beamToNamed('/$LOCATION_ITEM/${widget.itemKey}/$chatroomKey');
   }
 
   @override

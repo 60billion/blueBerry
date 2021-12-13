@@ -1,4 +1,5 @@
 import 'package:beamer/beamer.dart';
+import 'package:blueberry/screens/chat/chatroom_screen.dart';
 import 'package:blueberry/screens/home_screen.dart';
 import 'package:blueberry/screens/input/category_input_screen.dart';
 import 'package:blueberry/screens/input/input_screen.dart';
@@ -13,6 +14,7 @@ const LOCATION_HOME = 'home';
 const LOCATION_INPUT = 'input';
 const LOCATION_ITEM = 'item';
 const LOCATION_ITEM_ID = 'item_id';
+const LOCATION_CHATROOM_ID = 'chatroom_id';
 const LOCATION_CATEGORY_INPUT = 'category_input';
 
 class HomeLocation extends BeamLocation {
@@ -68,10 +70,16 @@ class ItemLocation extends BeamLocation {
         BeamPage(
             key: ValueKey(LOCATION_ITEM),
             child:
-                ItemDetailScreen(state.pathParameters[LOCATION_ITEM_ID] ?? ""))
+                ItemDetailScreen(state.pathParameters[LOCATION_ITEM_ID] ?? "")),
+      if (state.pathParameters.containsKey(LOCATION_CHATROOM_ID))
+        BeamPage(
+            key: ValueKey(LOCATION_CHATROOM_ID),
+            child: ChatroomScreen(
+                chatroomKey: state.pathParameters[LOCATION_CHATROOM_ID] ?? ""))
     ];
   }
 
   @override
-  List get pathBlueprints => ['/$LOCATION_ITEM/:$LOCATION_ITEM_ID'];
+  List get pathBlueprints =>
+      ['/$LOCATION_ITEM/:$LOCATION_ITEM_ID/:$LOCATION_CHATROOM_ID'];
 }
