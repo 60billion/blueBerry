@@ -1,3 +1,4 @@
+import 'package:blueberry/data/chat_model.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
@@ -6,7 +7,12 @@ const roundedCorner = Radius.circular(20);
 class Chat extends StatelessWidget {
   final Size size;
   final bool isMine;
-  const Chat({Key? key, required this.size, required this.isMine})
+  final ChatModel chatModel;
+  const Chat(
+      {Key? key,
+      required this.size,
+      required this.isMine,
+      required this.chatModel})
       : super(key: key);
 
   @override
@@ -20,7 +26,7 @@ class Chat extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         ExtendedImage.network(
-          "https://randomuser.me/api/portraits/lego/6.jpg",
+          "https://minimaltoolkit.com/images/randomdata/male/79.jpg",
           width: 40,
           height: 40,
           fit: BoxFit.cover,
@@ -33,7 +39,7 @@ class Chat extends StatelessWidget {
           children: [
             Container(
               child: Text(
-                "채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지",
+                chatModel.msg,
                 style: TextStyle(color: Colors.black),
               ),
               padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -72,7 +78,7 @@ class Chat extends StatelessWidget {
         SizedBox(width: 6),
         Container(
           child: Text(
-            "채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지채팅 테스트 메세지",
+            chatModel.msg,
             style: TextStyle(color: Colors.white),
           ),
           padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),

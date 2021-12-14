@@ -29,7 +29,7 @@ class ChatModel {
         ? DateTime.now().toUtc()
         : (json[DOC_CREATEDDATE] as Timestamp).toDate();
     userKey = json[DOC_USERKEY] ?? "";
-    reference = json['reference'] ?? "";
+    //reference = json['reference'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -38,7 +38,7 @@ class ChatModel {
     map[DOC_MSG] = msg;
     map[DOC_CREATEDDATE] = createdDate;
     map[DOC_USERKEY] = userKey;
-    map['reference'] = reference;
+    //map['reference'] = reference;
     return map;
   }
 

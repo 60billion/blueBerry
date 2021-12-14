@@ -76,6 +76,9 @@ class ItemLocation extends BeamLocation {
             key: ValueKey(LOCATION_CHATROOM_ID),
             child: ChatroomScreen(
                 chatroomKey: state.pathParameters[LOCATION_CHATROOM_ID] ?? ""))
+      //chatroomKey:
+      //'4hQtDKfuelaESxVQGnDCKCJswGG3_1639033691301346_ITEU4CI7iAdMGjQBYK5HZiUN5AQ2'))
+      //채팅 테스트용 채팅방 매칭하려고
     ];
   }
 
