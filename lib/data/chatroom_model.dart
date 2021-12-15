@@ -54,7 +54,7 @@ class ChatroomModel {
   ChatroomModel.fromJson(
       Map<String, dynamic> json, this.chatroomKey, this.reference) {
     itemImage = json[DOC_ITEMIMAGE] ?? "";
-    itemTitle = json[DOC_ITEMIMAGE] ?? "";
+    itemTitle = json[DOC_ITEMTITLE] ?? "";
     itemKey = json[DOC_ITEMKEY] ?? "";
     itemAddress = json[DOC_ITEMADDRESS] ?? "";
     itemPrice = json[DOC_ITEMPRICE] ?? 0;
@@ -77,7 +77,7 @@ class ChatroomModel {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map[DOC_ITEMIMAGE] = itemImage;
-    map[DOC_ITEMIMAGE] = itemTitle;
+    map[DOC_ITEMTITLE] = itemTitle;
     map[DOC_ITEMKEY] = itemKey;
     map[DOC_ITEMADDRESS] = itemAddress;
     map[DOC_ITEMPRICE] = itemPrice;

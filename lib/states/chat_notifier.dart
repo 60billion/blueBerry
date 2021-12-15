@@ -7,9 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 class ChatNotifier extends ChangeNotifier {
-  late ChatroomModel _chatroomModel;
+  ChatroomModel? _chatroomModel;
   List<ChatModel> _chatList = [];
-  late String _chatroomKey;
+  final String _chatroomKey;
 
   ChatNotifier(this._chatroomKey) {
     ChatService().connectChatroom(_chatroomKey).listen((chatroomModel) {
@@ -37,7 +37,7 @@ class ChatNotifier extends ChangeNotifier {
     ChatService().createNewChat(_chatroomKey, chatModel);
   }
 
-  ChatroomModel get chatroomModel => _chatroomModel;
+  ChatroomModel? get chatroomModel => _chatroomModel;
   List<ChatModel> get chatList => _chatList;
   String get chatroomKey => _chatroomKey;
 }

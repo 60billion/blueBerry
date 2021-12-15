@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:blueberry/data/chat_model.dart';
+import 'package:blueberry/data/chatroom_model.dart';
 import 'package:blueberry/data/user_model.dart';
 import 'package:blueberry/repo/chat_service.dart';
 import 'package:blueberry/screens/chat/chat.dart';
@@ -8,7 +9,9 @@ import 'package:blueberry/states/chat_notifier.dart';
 import 'package:blueberry/states/user_provider.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_multi_formatter/formatters/formatter_extension_methods.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ChatroomScreen extends StatefulWidget {
   final String chatroomKey;
@@ -48,7 +51,7 @@ class _ChatroomScreenState extends State<ChatroomScreen> {
           body: SafeArea(
             child: Column(
               children: [
-                itemInfo(size),
+                itemInfo(size, chatNotifier),
                 Divider(
                   height: 4,
                   thickness: 0,
@@ -83,7 +86,8 @@ class _ChatroomScreenState extends State<ChatroomScreen> {
     );
   }
 
-  Container itemInfo(Size size) {
+  Container itemInfo(Size size, ChatNotifier chatNotifier) {
+    ChatroomModel? chatroomModel = chatNotifier.chatroomModel;
     return Container(
       //Todo: 핸드폰을 옆으로 하면 이미지가 짤림...
       height: size.height / 7.5,
@@ -101,7 +105,7 @@ class _ChatroomScreenState extends State<ChatroomScreen> {
             Row(
               children: [
                 ExtendedImage.network(
-                  "https://randomuser.me/api/portraits/lego/6.jpg",
+                  chatroomModel == null ? "" : chatroomModel.itemImage,
                   width: 50,
                   height: 50,
                 ),
@@ -122,11 +126,18 @@ class _ChatroomScreenState extends State<ChatroomScreen> {
                           SizedBox(
                             width: 5,
                           ),
-                          Text("이케아 소르테라 분리수거함 5개",
+                          Text(
+                              chatroomModel == null
+                                  ? ""
+                                  : chatroomModel.itemTitle,
                               style: TextStyle(fontSize: 14)),
                         ]),
                         Row(children: [
-                          Text("30,000원",
+                          Text(
+                              chatroomModel == null
+                                  ? ""
+                                  : chatroomModel.itemPrice.toCurrencyString(
+                                      mantissaLength: 0, trailingSymbol: '원'),
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16)),
                           SizedBox(

@@ -126,4 +126,31 @@ class ChatService {
     });
     return chatList;
   }
+
+  Future<List<ChatroomModel>> getMyChatList(String myUserKey) async {
+    List<ChatroomModel> chatrooms = [];
+
+    QuerySnapshot<Map<String, dynamic>> buying = await FirebaseFirestore
+        .instance
+        .collection(COL_CHATROOMS)
+        .where(DOC_BUYERKEY, isEqualTo: myUserKey)
+        .get();
+
+    QuerySnapshot<Map<String, dynamic>> selling = await FirebaseFirestore
+        .instance
+        .collection(COL_CHATROOMS)
+        .where(DOC_SELLERKEY, isEqualTo: myUserKey)
+        .get();
+
+    buying.docs.forEach((DocumentSnapshot) {
+      chatrooms.add(ChatroomModel.fromQuerySnapshot(DocumentSnapshot));
+    });
+    selling.docs.forEach((DocumentSnapshot) {
+      chatrooms.add(ChatroomModel.fromQuerySnapshot(DocumentSnapshot));
+    });
+
+    chatrooms.sort((a, b) => (a.lastMsgTime).compareTo(b.lastMsgTime));
+
+    return chatrooms;
+  }
 }

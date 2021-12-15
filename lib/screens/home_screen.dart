@@ -3,6 +3,7 @@
 import 'package:beamer/src/beamer.dart';
 import 'package:blueberry/data/user_model.dart';
 import 'package:blueberry/router/location.dart';
+import 'package:blueberry/screens/chat/chat_list_page.dart';
 import 'package:blueberry/screens/home/items_page.dart';
 import 'package:blueberry/screens/home/map_page.dart';
 import 'package:blueberry/states/user_provider.dart';
@@ -28,20 +29,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> _widgetOptions = <Widget>[
-      ItemsPage(),
-      (context.read<UserProvider>().userModel == null)
-          ? Container(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            )
-          : MapPage(context
-              .read<UserProvider>()
-              .userModel!), //the Text widgets will change a page class
-      Text("chatting"),
-      Text("profile")
-    ];
+    UserModel? userModel = context.read<UserProvider>().userModel;
+
+    List<Widget> _widgetOptions = (userModel == null)
+        ? [Container()]
+        : [
+            ItemsPage(
+              userKey: userModel.userKey,
+            ),
+            MapPage(userModel),
+            ChatListPage(),
+            Text("profile")
+          ];
 
     return SafeArea(
       child: Scaffold(
