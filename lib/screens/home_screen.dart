@@ -30,18 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     UserModel? userModel = context.read<UserProvider>().userModel;
-
-    List<Widget> _widgetOptions = (userModel == null)
-        ? [Container()]
-        : [
-            ItemsPage(
-              userKey: userModel.userKey,
-            ),
-            MapPage(userModel),
-            ChatListPage(),
-            Text("profile")
-          ];
-
     return SafeArea(
       child: Scaffold(
         floatingActionButton: ExpandableFab(distance: 90, children: [
@@ -70,7 +58,29 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ]),
-        body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+        body: (userModel == null)
+            ? Container(
+                child: Center(
+                  child: ElevatedButton(
+                    child: Text("시작하기"),
+                    onPressed: () {
+                      setState(() {});
+                    },
+                  ),
+                ),
+              )
+            : Center(
+                child: IndexedStack(
+                index: _selectedIndex,
+                children: [
+                  ItemsPage(
+                    userKey: userModel.userKey,
+                  ),
+                  MapPage(userModel),
+                  ChatListPage(),
+                  Text("profile")
+                ],
+              )),
         bottomNavigationBar: BottomNavigationBar(
           // ignore: prefer_const_literals_to_create_immutables
           items: [
@@ -92,7 +102,9 @@ class _HomeScreenState extends State<HomeScreen> {
           title: const Text("Home"),
           actions: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                context.beamToNamed('/$LOCATION_SEARCH');
+              },
               icon: const Icon(Icons.search),
             ),
             IconButton(

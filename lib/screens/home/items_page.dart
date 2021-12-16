@@ -25,7 +25,8 @@ class _ItemsPageState extends State<ItemsPage> {
   bool init = false;
   @override
   void initState() {
-    if (!init) {
+    print("initState");
+    if (init == false) {
       _onRefresh();
       init = true;
     }
