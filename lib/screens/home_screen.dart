@@ -1,12 +1,14 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:beamer/src/beamer.dart';
+import 'package:blueberry/data/item_model.dart';
 import 'package:blueberry/data/user_model.dart';
 import 'package:blueberry/router/location.dart';
 import 'package:blueberry/screens/chat/chat_list_page.dart';
 import 'package:blueberry/screens/home/items_page.dart';
 import 'package:blueberry/screens/home/map_page.dart';
 import 'package:blueberry/states/user_provider.dart';
+import 'package:blueberry/utils/logger.dart';
 import 'package:blueberry/widgets/expandable_fab.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

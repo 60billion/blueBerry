@@ -1,3 +1,5 @@
+import 'package:blueberry/data/item_model.dart';
+import 'package:blueberry/repo/algolia_service.dart';
 import 'package:flutter/material.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -10,6 +12,8 @@ class SearchScreen extends StatefulWidget {
 final TextEditingController _textEditingController = TextEditingController();
 
 class _SearchScreenState extends State<SearchScreen> {
+  List<ItemModel> items = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,8 +25,8 @@ class _SearchScreenState extends State<SearchScreen> {
             child: Center(
               child: TextFormField(
                 controller: _textEditingController,
-                onFieldSubmitted: (value) {
-                  print("submit - ${value}");
+                onFieldSubmitted: (value) async {
+                  items = await AlgoliaService().queryItems(value);
                   setState(() {});
                 },
                 decoration: InputDecoration(
@@ -43,13 +47,13 @@ class _SearchScreenState extends State<SearchScreen> {
       body: ListView.separated(
           itemBuilder: (context, index) {
             return ListTile(
-              title: Text(_textEditingController.text),
+              title: Text(items[index].title),
             );
           },
           separatorBuilder: (context, index) {
             return Divider();
           },
-          itemCount: 30),
+          itemCount: items.length),
     );
   }
 }

@@ -67,6 +67,24 @@ class ItemModel {
 //    reference = json['reference'];
   }
 
+  ItemModel.fromAlgolia(Map<String, dynamic> json, this.itemKey) {
+    itemKey = json[DOC_ITEMKEY] ?? "";
+    userKey = json[DOC_USERKEY] ?? "";
+    imageDownloadUrls = json[DOC_IMAGEDOWNLOADURLS] != null
+        ? json[DOC_IMAGEDOWNLOADURLS].cast<String>()
+        : [];
+    title = json[DOC_TITLE] ?? "";
+    category = json[DOC_CATEGORY] ?? "none";
+    price = json[DOC_PRICE] ?? 0;
+    negotiable = json[DOC_NEGOTIABLE] ?? false;
+    detail = json[DOC_DETAIL] ?? "";
+    address = json[DOC_ADDRESS] ?? "";
+    geoFirePoint = GeoFirePoint(0, 0);
+
+    createdDate = DateTime.now().toUtc();
+//    reference = json['reference'];
+  }
+
   ItemModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot)
       : this.fromJson(snapshot.data()!, snapshot.id, snapshot.reference);
 
